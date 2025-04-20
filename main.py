@@ -5,6 +5,8 @@ import os
 import wandb
 import hydra
 from omegaconf import DictConfig
+from hydra.utils import get_original_cwd
+
 
 
 _steps = [
@@ -29,6 +31,7 @@ def go(config: DictConfig):
         os.environ["WANDB_RUN_GROUP"] = config["main"]["experiment_name"]
 
         # Steps to execute
+        _original_cwd = get_original_cwd()
         steps_par = config['main']['steps']
         active_steps = steps_par.split(",") if steps_par != "all" else _steps
 
