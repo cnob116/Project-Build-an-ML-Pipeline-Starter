@@ -7,7 +7,7 @@ import hydra
 from omegaconf import DictConfig
 
 
-    _steps = [
+_steps = [
         "download",
         "basic_cleaning",
         "data_check",
@@ -21,8 +21,8 @@ from omegaconf import DictConfig
 
 
     # This automatically reads in the configuration
-    @hydra.main(config_name='config')
-    def go(config: DictConfig):
+@hydra.main(config_name='config')
+def go(config: DictConfig):
 
         # Setup the wandb experiment. All runs will be grouped under this name
         os.environ["WANDB_PROJECT"] = config["main"]["project_name"]
@@ -100,5 +100,5 @@ from omegaconf import DictConfig
                 pass
 
 
-    if __name__ == "__main__":
-        go()
+if __name__ == "__main__":
+     go()
