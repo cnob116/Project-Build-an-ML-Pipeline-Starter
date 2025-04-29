@@ -2,10 +2,7 @@
 """
 Download from W&B the raw dataset and apply some basic data cleaning, exporting the result to a new artifact
 """
-import argparse
-import logging
-import wandb
-import pan
+
 import argparse
 import logging
 import wandb
@@ -18,12 +15,12 @@ logger = logging.getLogger()
 # DO NOT MODIFY
 def go(args):
 
-    run = wandb.init(job_type="basic_cleaning")
-    run.config.update(args)
+
 
     # Download input artifact. This will also log that this script is using this
-    
-    run = wandb.init(project="nyc_airbnb", group="cleaning", save_code=True)
+
+    run = wandb.init(project="nyc_airbnb", job_type="basic_cleaning", group="cleaning", save_code=True)
+    run.config.update(args)
     artifact_local_path = run.use_artifact(args.input_artifact).file()
     df = pd.read_csv(artifact_local_path)
     # Drop outliers

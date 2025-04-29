@@ -2,6 +2,7 @@
 """
 This script trains a Random Forest
 """
+
 import argparse
 import logging
 import os
@@ -39,7 +40,6 @@ logger = logging.getLogger()
 
 
 def go(args):
-
     run = wandb.init(job_type="train_random_forest")
     run.config.update(args)
 
@@ -68,6 +68,7 @@ def go(args):
 
     sk_pipe, processed_features = get_inference_pipeline(rf_config, args.max_tfidf_features)
 
+
     # Then fit it to the X_train, y_train data
     logger.info("Fitting")
 
@@ -95,23 +96,34 @@ def go(args):
     ######################################
     # Save the sk_pipe pipeline as a mlflow.sklearn model in the directory "random_forest_dir"
     # HINT: use mlflow.sklearn.save_model
+
+    export_path = "random_forest_dir"
+    signature = infer_signature(X_val, y_pred)
+
     mlflow.sklearn.save_model(
         sk_pipe,
+        export_path,
+        signature=signature,
         path="random_forest_dir",
         input_example = X_train.iloc[:5]
     )
+
+    mlflow.sklearn.log_model(sk_pipe, artifact_path="random_forest_model")
+
     ######################################
 
 
     # Upload the model we just exported to W&B
+
     artifact = wandb.Artifact(
-        args.output_artifact,
+        name = args.output_artifact,
         type = 'model_export',
-        description = 'Trained ranfom forest artifact',
+        description = 'Trained random forest artifact',
         metadata = rf_config
     )
-    artifact.add_dir('random_forest_dir')
+    artifact.add_dir('export_path')
     run.log_artifact(artifact)
+
 
     # Plot feature importance
     fig_feat_imp = plot_feature_importance(sk_pipe, processed_features)
@@ -163,7 +175,7 @@ def get_inference_pipeline(rf_config, max_tfidf_features):
     # 1 - A SimpleImputer(strategy="most_frequent") to impute missing values
     # 2 - A OneHotEncoder() step to encode the variable
     non_ordinal_categorical_preproc = make_pipeline(
-        SimpleImputer("most_frequent")
+        SimpleImputer(strategy="most_frequent"),
         OneHotEncoder()
     )
     ######################################
@@ -231,6 +243,7 @@ def get_inference_pipeline(rf_config, max_tfidf_features):
             ("random_forest", random_forest),
         ]
     )
+
 
     return sk_pipe, processed_features
     ######################################
