@@ -99,12 +99,12 @@ def go(args):
     # HINT: use mlflow.sklearn.save_model
 
     export_path = "random_forest_dir"
+    X_val = X_val.astype({col: 'string' for col in X_val.select_dtypes(include=['object']).columns})
     # Infer signature from actual model input and output
     signature = infer_signature(X_val, y_pred)
 
     mlflow.sklearn.save_model(
         sk_pipe,
-        export_path,
         signature=signature,
         path=export_path,
         input_example = X_train.iloc[:5]

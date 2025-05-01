@@ -32,6 +32,7 @@ def go(config: DictConfig):
 
 
         # Steps to execute
+
         steps_par = config['main']['steps']
         active_steps = steps_par.split(",") if steps_par != "all" else _steps
 
